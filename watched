@@ -1,0 +1,32 @@
+#!/bin/sh
+# Adds an IMDB ID to the fkult last watched database,
+# default is fkultdb.csv, can be overriden by setting
+# the env variable FKULTDB.
+#
+# Usage:
+# ./watched "IMBD ID of movie watched"
+# adds the movie with the current time and date
+# ./watched "IMBD ID of movie watch" "a time or date string accepted by GNU date",
+# well take a guess?
+
+if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
+  echo "Usage:"
+  echo "  $0 IMDB_ID [watch_date]"
+  exit 1
+fi
+
+imdbID=$1
+watched=$2
+
+if [ -z "$FKULTDB" ]; then
+  FKULTDB=fkultdb.csv
+fi
+
+if [ -z "$watched"  ]; then
+  watched=now
+fi
+
+timestamp=$(date -d "$watched" -I -u)
+test $? || exit 2
+
+echo "$imdbID,$timestamp" >> "$FKULTDB"

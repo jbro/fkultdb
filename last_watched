@@ -1,0 +1,29 @@
+#!/bin/sh
+# Look up when an IBMD ID from the last watched database,
+# and show the latest date or never if the IMDB is not in
+# in the database.
+# The default data base is fkultdb.csv, can be overriden by
+# setting the env variable FKULTDB.
+#
+# Usage:
+# ./last_watched "IBMD ID"
+
+if [ "$#" -ne 1 ]; then
+  echo "Usage:"
+  echo "  $0 IMDB_ID"
+fi
+
+imdbID=$1
+
+if [ -z "$FKULTDB" ]; then
+  FKULTDB=fkultdb.csv
+fi
+
+watched=$(grep "$imdbID" "$FKULTDB")
+if [ ! $? ]; then
+  echo "never"
+  exit 0
+fi
+
+echo "$watched" | cut -f2 -d, | sort | tail -n1
+
